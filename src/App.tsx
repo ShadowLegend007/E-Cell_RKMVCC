@@ -159,6 +159,14 @@ function App() {
         stagger: 0.1,
         ease: "back.out(1.2)"
       }, "-=0.2")
+      .from(".subteam-member-line", {
+        scaleY: 0,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        transformOrigin: "top center",
+        ease: "power2.inOut"
+      }, "-=0.2")
       .from(".subteam-member", {
         y: 40,
         opacity: 0,
@@ -348,7 +356,7 @@ function App() {
                   {/* Team Members */}
                   <div className="flex flex-col gap-6 w-full items-center relative">
                     {/* Connecting line for members in a team */}
-                    <div className="absolute top-[-32px] bottom-0 left-1/2 -translate-x-1/2 z-0 shine-line overflow-hidden line-3d-v"></div>
+                    <div className="absolute top-[-32px] bottom-0 left-1/2 -translate-x-1/2 z-0 shine-line overflow-hidden line-3d-v subteam-member-line"></div>
                     
                     {team.members.map((member, memberIdx) => (
                       <div key={memberIdx} className="relative z-10 subteam-member">
