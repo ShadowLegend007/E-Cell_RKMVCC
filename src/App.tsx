@@ -11,6 +11,7 @@ import SplashCursor from './components/SplashCursor';
 import GoldenGlitters from './components/GoldenGlitters';
 import { fetchTeamData, LEADER, CO_LEADER, MANAGEMENT_HEAD, SUB_TEAMS } from './data/team';
 import type { TeamMember, TeamData } from './data/team';
+import logo from './assets/Logo.png';
 
 const renderProfile = (member: TeamMember, size: 'large' | 'small' = 'large') => {
   const cardWidth = size === 'large' ? 'w-[280px]' : 'w-[240px]';
@@ -229,11 +230,11 @@ function App() {
             >
               <div className="flex flex-col items-center justify-center h-full w-full p-2">
                 <img 
-                  src="/src/assets/logo.png" 
+                  src={logo} 
                   alt="RKMVCC E-CELL Logo" 
                   className="w-full h-full object-contain drop-shadow-[0_4px_15px_rgba(212,175,55,0.3)]"
                   onError={(e) => {
-                    // Fallback to text if logo.png is missing
+                    // Fallback to text if Logo.png is missing
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                     if (target.parentElement) {
