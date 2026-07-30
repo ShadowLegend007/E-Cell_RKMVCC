@@ -233,6 +233,8 @@ function App() {
                   src={logo} 
                   alt="RKMVCC E-CELL Logo" 
                   className="w-full h-full object-contain drop-shadow-[0_4px_15px_rgba(212,175,55,0.3)]"
+                  loading="eager"
+                  fetchPriority="high"
                   onError={(e) => {
                     // Fallback to text if Logo.png is missing
                     const target = e.target as HTMLImageElement;
