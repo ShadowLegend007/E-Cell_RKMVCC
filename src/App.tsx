@@ -30,7 +30,7 @@ const renderProfile = (member: TeamMember, size: 'large' | 'small' = 'large') =>
         portfolio={member.portfolio}
         showUserInfo={true}
         enableTilt={true}
-        enableMobileTilt={true}
+        enableMobileTilt={false}
         behindGlowEnabled={false}
         innerGradient="linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.02) 100%)"
         behindGlowColor="rgba(212, 175, 55, 0.3)"
@@ -75,7 +75,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // GSAP Animations
+    // Header and Parallax GSAP Animations (Run Once)
     const ctx = gsap.context(() => {
       // Header animations
       gsap.from(logoRef.current, {
@@ -102,6 +102,29 @@ function App() {
         ease: "power2.out",
       });
 
+      // Parallax Effects
+      gsap.utils.toArray('.parallax-bg').forEach((layer, i) => {
+        const depth = (i + 1) * 0.15;
+        gsap.to(layer as Element, {
+          y: () => -(window.innerHeight * depth),
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+            invalidateOnRefresh: true
+          }
+        });
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    // Tree GSAP Animations
+    const ctx = gsap.context(() => {
       // Tree animations tied to individual scroll positions (Scroll Reveal & Hide)
       const commonScrollTrigger = (triggerTarget: string | Element) => ({
         trigger: triggerTarget,
@@ -208,24 +231,6 @@ function App() {
           opacity: 0,
           duration: 0.5,
           ease: "back.out(1.2)"
-        });
-      });
-
-
-      // Parallax Effects
-      // 1. Background decorative elements
-      gsap.utils.toArray('.parallax-bg').forEach((layer, i) => {
-        const depth = (i + 1) * 0.15;
-        gsap.to(layer as Element, {
-          y: () => -(window.innerHeight * depth),
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-            invalidateOnRefresh: true
-          }
         });
       });
 
