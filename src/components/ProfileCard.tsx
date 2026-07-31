@@ -388,20 +388,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
     display: 'none'
   };
 
-  const glareStyle: React.CSSProperties = {
-    transform: 'translate3d(0, 0, 1.1px)',
-    overflow: 'hidden',
-    backgroundImage: `radial-gradient(
-      farthest-corner circle at var(--pointer-x) var(--pointer-y),
-      rgba(255, 255, 255, 0.4) 0%,
-      rgba(255, 255, 255, 0.1) 30%,
-      transparent 70%
-    )`,
-    zIndex: 2,
-    gridArea: '1 / -1',
-    borderRadius: cardRadius,
-    pointerEvents: 'none'
-  };
+
 
   return (
     <div
