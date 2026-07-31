@@ -9,6 +9,7 @@ import ProfileCard from './components/ProfileCard';
 import GlareHover from './components/GlareHover';
 import SplashCursor from './components/SplashCursor';
 import GoldenGlitters from './components/GoldenGlitters';
+import Preloader from './components/Preloader';
 import { fetchTeamData, LEADER, CO_LEADER, MANAGEMENT_HEAD, SUB_TEAMS } from './data/team';
 import type { TeamMember, TeamData } from './data/team';
 import logo from './assets/Logo.png';
@@ -48,6 +49,7 @@ function App() {
     management: MANAGEMENT_HEAD,
     subTeams: SUB_TEAMS
   });
+  const [isAppReady, setIsAppReady] = useState(false);
 
   useEffect(() => {
     // Prevent browser from restoring scroll position on reload
@@ -67,7 +69,38 @@ function App() {
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
 
-    fetchTeamData().then(setTeamData);
+    fetchTeamData().then((data) => {
+      setTeamData(data);
+      
+      // Image preloading logic
+      const imageUrls = [logo];
+      
+      const addImagesFromMember = (member: TeamMember) => {
+        if (member.avatarUrl) imageUrls.push(member.avatarUrl);
+      };
+      
+      addImagesFromMember(data.leader);
+      addImagesFromMember(data.coLeader);
+      addImagesFromMember(data.management);
+      data.subTeams.forEach(team => team.members.forEach(addImagesFromMember));
+
+      const loadPromises = imageUrls.map(url => {
+        return new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve(); // continue even if error
+          img.src = url;
+        });
+      });
+
+      // Wait for all images or timeout after 4 seconds
+      Promise.race([
+        Promise.all(loadPromises),
+        new Promise((resolve) => setTimeout(resolve, 4000))
+      ]).then(() => {
+        setIsAppReady(true);
+      });
+    });
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
@@ -75,6 +108,8 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (!isAppReady) return;
+    
     // Header and Parallax GSAP Animations (Run Once)
     const ctx = gsap.context(() => {
       // Header animations
@@ -102,27 +137,35 @@ function App() {
         ease: "power2.out",
       });
 
-      // Parallax Effects
-      gsap.utils.toArray('.parallax-bg').forEach((layer, i) => {
-        const depth = (i + 1) * 0.15;
-        gsap.to(layer as Element, {
-          y: () => -(window.innerHeight * depth),
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-            invalidateOnRefresh: true
-          }
+      // Parallax Effects - disable on mobile for performance
+      if (window.innerWidth >= 768) {
+        gsap.utils.toArray('.parallax-bg').forEach((layer, i) => {
+          const depth = (i + 1) * 0.15;
+          gsap.to(layer as Element, {
+            y: () => -(window.innerHeight * depth),
+            ease: "none",
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+              invalidateOnRefresh: true
+            }
+          });
         });
-      });
+      }
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isAppReady]);
 
   useEffect(() => {
+    if (!isAppReady) return;
+    const isMobileDevice = window.innerWidth < 768 || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    
+    // Disable GSAP tree animations on mobile to guarantee fluid scrolling on old smartphones
+    if (isMobileDevice) return;
+
     // Tree GSAP Animations
     const ctx = gsap.context(() => {
       // Tree animations tied to individual scroll positions (Scroll Reveal & Hide)
@@ -237,7 +280,7 @@ function App() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [teamData]);
+  }, [teamData, isAppReady]);
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -251,7 +294,9 @@ function App() {
   }, []);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-white text-black font-sans selection:bg-primary/20 relative overflow-hidden">
+    <>
+      <Preloader isReady={isAppReady} />
+      <div ref={containerRef} className="min-h-screen bg-white text-black font-sans selection:bg-primary/20 relative overflow-hidden">
       {!isMobile && (
         <SplashCursor
           DENSITY_DISSIPATION={4.5}
@@ -451,6 +496,7 @@ function App() {
         </div>
       </footer>
     </div>
+    </>
   );
 }
 
