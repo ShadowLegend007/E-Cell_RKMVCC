@@ -474,25 +474,22 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
               />
 
               {showUserInfo && (
-                <div
-                  className="absolute z-[2] flex items-center justify-between backdrop-blur-[20px] border border-primary/60 pointer-events-auto"
+                <div className="absolute z-[2] flex items-center justify-between backdrop-blur-[20px] border border-primary/60 pointer-events-auto p-1.5 px-2 md:p-2.5"
                   style={
                     {
-                      '--ui-inset': '10px',
+                      '--ui-inset': '8px',
                       '--ui-radius-bias': '4px',
                       bottom: 'var(--ui-inset)',
                       left: 'var(--ui-inset)',
                       right: 'var(--ui-inset)',
                       background: 'rgba(0, 0, 0, 0.45)',
                       borderRadius: 'calc(max(0px, var(--card-radius) - var(--ui-inset) + var(--ui-radius-bias)))',
-                      padding: '10px 10px'
                     } as React.CSSProperties
                   }
                 >
-                  <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
                     <div
-                      className="rounded-full overflow-hidden border border-primary/60 flex-shrink-0"
-                      style={{ width: '36px', height: '36px' }}
+                      className="rounded-full overflow-hidden border border-primary/60 flex-shrink-0 w-7 h-7 md:w-9 md:h-9"
                     >
                       <img
                         className="w-full h-full object-cover rounded-full"
@@ -503,8 +500,8 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                       />
                     </div>
                     <div className="flex flex-col items-start gap-0.5 min-w-0">
-                      <div className="text-xs font-semibold text-white leading-none truncate w-full" title={`@${handle}`}>@{handle}</div>
-                      <div className="text-[10px] text-gray-300 leading-none truncate w-full">{status}</div>
+                      <div className="text-[10px] md:text-xs font-semibold text-white leading-none truncate w-full" title={`@${handle}`}>@{handle}</div>
+                      <div className="text-[8px] md:text-[10px] text-gray-300 leading-none truncate w-full">{status}</div>
                     </div>
                   </div>
                   <div className="flex gap-1.5 flex-shrink-0" style={{ pointerEvents: 'auto', gridArea: 'auto' }}>
@@ -513,10 +510,10 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                         href={linkedin}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 border border-primary/60 rounded-lg text-primary hover:bg-primary/20 transition-colors backdrop-blur-[10px]"
+                        className="p-1 md:p-1.5 border border-primary/60 rounded-lg text-primary hover:bg-primary/20 transition-colors backdrop-blur-[10px]"
                         aria-label="LinkedIn Profile"
                       >
-                        <FaLinkedin size={16} />
+                        <FaLinkedin className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </a>
                     )}
                     {instagram && (
@@ -524,10 +521,10 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                         href={instagram}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 border border-primary/60 rounded-lg text-primary hover:bg-primary/20 transition-colors backdrop-blur-[10px]"
+                        className="p-1 md:p-1.5 border border-primary/60 rounded-lg text-primary hover:bg-primary/20 transition-colors backdrop-blur-[10px]"
                         aria-label="Instagram Profile"
                       >
-                        <FaInstagram size={16} />
+                        <FaInstagram className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </a>
                     )}
                     {portfolio && portfolio !== 'NA' && portfolio !== 'na' && (
@@ -535,10 +532,10 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                         href={portfolio.startsWith('http') ? portfolio : `https://${portfolio}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 border border-primary/60 rounded-lg text-primary hover:bg-primary/20 transition-colors backdrop-blur-[10px]"
+                        className="p-1 md:p-1.5 border border-primary/60 rounded-lg text-primary hover:bg-primary/20 transition-colors backdrop-blur-[10px]"
                         aria-label="Portfolio"
                       >
-                        <FaGlobe size={16} />
+                        <FaGlobe className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </a>
                     )}
                     {(!linkedin && !instagram && (!portfolio || portfolio === 'NA' || portfolio === 'na')) && (
@@ -570,9 +567,8 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             >
               <div className="w-full absolute flex flex-col items-center px-2" style={{ top: '1.2em', display: 'flex', gridArea: 'auto' }}>
                 <h3
-                  className="font-bold m-0 leading-tight text-center tracking-wide"
+                  className="font-bold m-0 leading-tight text-center tracking-wide text-[1.1rem] md:text-[1.35rem]"
                   style={{
-                    fontSize: '1.35rem',
                     color: '#ffffff',
                     textShadow: '0 2px 6px rgba(0,0,0,0.8)',
                     display: 'block',
@@ -582,11 +578,10 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                   {name}
                 </h3>
                 <p
-                  className="font-semibold whitespace-nowrap mx-auto text-center"
+                  className="font-semibold whitespace-nowrap mx-auto text-center text-[0.75rem] md:text-[0.85rem]"
                   style={{
                     position: 'relative',
                     top: '3px',
-                    fontSize: '0.85rem',
                     color: '#d4af37',
                     textShadow: '0 2px 4px rgba(0,0,0,0.9)',
                     margin: '0 auto',

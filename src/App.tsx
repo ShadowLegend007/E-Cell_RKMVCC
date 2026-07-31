@@ -14,7 +14,7 @@ import type { TeamMember, TeamData } from './data/team';
 import logo from './assets/Logo.png';
 
 const renderProfile = (member: TeamMember, size: 'large' | 'small' = 'large') => {
-  const cardWidth = size === 'large' ? 'w-[220px] md:w-[280px]' : 'w-[180px] md:w-[240px]';
+  const cardWidth = size === 'large' ? 'w-[250px] md:w-[280px]' : 'w-[200px] md:w-[240px]';
 
   return (
     <div className={`team-node ${cardWidth} shrink-0 mx-2 my-0 flex flex-col items-center z-10`}>
@@ -317,7 +317,7 @@ function App() {
             </p>
           </div>
 
-          <div className="header-buttons flex gap-4 mt-8">
+          <div className="header-buttons flex flex-wrap justify-center items-center gap-3 md:gap-4 mt-8 w-full max-w-full">
             <SpecularButton
               size="md"
               baseColor="#ffffff"
