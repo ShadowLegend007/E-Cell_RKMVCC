@@ -232,7 +232,7 @@ function App() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [teamData]);
 
   const [isMobile, setIsMobile] = useState(false);
 
