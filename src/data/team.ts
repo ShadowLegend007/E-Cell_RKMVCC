@@ -129,7 +129,7 @@ export const SUB_TEAMS: TeamGroup[] = [
         id: 'cw2',
         name: 'Dhrubajyoti Roy',
         role: 'Member',
-        avatarUrl: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Dhrubajyoti',
+        avatarUrl: '/team/dhrubajyoti.jpg',
         linkedin: '#',
         instagram: '#',
       },
@@ -175,9 +175,7 @@ export const fetchTeamData = async (): Promise<TeamData> => {
               id: `live_${idx}`,
               name: name,
               role: role,
-              avatarUrl: name === 'Dhrubajyoti Roy' 
-                ? 'https://api.dicebear.com/9.x/avataaars/svg?seed=Dhrubajyoti' 
-                : '/team/' + name.split(' ')[0].toLowerCase() + '.jpg',
+              avatarUrl: '/team/' + name.split(' ')[0].toLowerCase() + '.jpg',
               linkedin: row['LinkedIn Profile URL']?.trim(),
               instagram: row['Instagram Handle']?.trim(),
               portfolio: row['Portfolio Link (If not valid, write NA)']?.trim()

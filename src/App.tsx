@@ -234,20 +234,33 @@ function App() {
     return () => ctx.revert();
   }, []);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || ('ontouchstart' in window) || navigator.maxTouchPoints > 0);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <div ref={containerRef} className="min-h-screen bg-white text-black font-sans selection:bg-primary/20 relative overflow-hidden">
-      <SplashCursor
-        DENSITY_DISSIPATION={4.5}
-        VELOCITY_DISSIPATION={4}
-        PRESSURE={0.3}
-        CURL={4}
-        SPLAT_RADIUS={0.25}
-        COLOR_UPDATE_SPEED={5}
-        COLOR="#d4af37"
-        RAINBOW_MODE={false}
-      />
+      {!isMobile && (
+        <SplashCursor
+          DENSITY_DISSIPATION={4.5}
+          VELOCITY_DISSIPATION={4}
+          PRESSURE={0.3}
+          CURL={4}
+          SPLAT_RADIUS={0.25}
+          COLOR_UPDATE_SPEED={5}
+          COLOR="#d4af37"
+          RAINBOW_MODE={false}
+        />
+      )}
 
-      <GoldenGlitters />
+      {!isMobile && <GoldenGlitters />}
 
       {/* Background Decorative Parallax Elements */}
       <div className="parallax-bg absolute top-[10%] left-[5%] w-64 h-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none z-0"></div>
