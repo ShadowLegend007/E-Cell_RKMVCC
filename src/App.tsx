@@ -14,8 +14,8 @@ import type { TeamMember, TeamData } from './data/team';
 import logo from './assets/Logo.png';
 
 const renderProfile = (member: TeamMember, size: 'large' | 'small' = 'large') => {
-  const cardWidth = size === 'large' ? 'w-[280px]' : 'w-[240px]';
-  
+  const cardWidth = size === 'large' ? 'w-[220px] md:w-[280px]' : 'w-[180px] md:w-[240px]';
+
   return (
     <div className={`team-node ${cardWidth} shrink-0 mx-2 my-0 flex flex-col items-center z-10`}>
       <ProfileCard
@@ -31,7 +31,7 @@ const renderProfile = (member: TeamMember, size: 'large' | 'small' = 'large') =>
         showUserInfo={true}
         enableTilt={true}
         enableMobileTilt={true}
-        behindGlowEnabled={true}
+        behindGlowEnabled={false}
         innerGradient="linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.02) 100%)"
         behindGlowColor="rgba(212, 175, 55, 0.3)"
       />
@@ -50,7 +50,28 @@ function App() {
   });
 
   useEffect(() => {
+    // Prevent browser from restoring scroll position on reload
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    // Always start from top
+    window.scrollTo(0, 0);
+    
+    // Fallback for browsers that delay scroll restoration
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
+
+    const handleBeforeUnload = () => {
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     fetchTeamData().then(setTeamData);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, []);
 
   useEffect(() => {
@@ -81,99 +102,114 @@ function App() {
         ease: "power2.out",
       });
 
-      // Main sequential timeline for the organizational chart
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".tree-container",
-          start: "top 80%",
-          once: true
-        }
+      // Tree animations tied to individual scroll positions (Scroll Reveal & Hide)
+      const commonScrollTrigger = (triggerTarget: string | Element) => ({
+        trigger: triggerTarget,
+        start: "top 85%",
+        toggleActions: "play reverse play reverse",
       });
 
       // 1. Reveal Leader Profile
-      tl.from(".leader-node", {
+      gsap.from(".leader-node", {
+        scrollTrigger: commonScrollTrigger(".leader-node"),
         y: 50,
         opacity: 0,
         duration: 0.6,
         ease: "back.out(1.2)"
-      })
+      });
       // 2. Reveal Line to Co-Leader
-      .from(".line-to-coleader", {
+      gsap.from(".line-to-coleader", {
+        scrollTrigger: commonScrollTrigger(".line-to-coleader"),
         scaleY: 0,
         opacity: 0,
         duration: 0.5,
         transformOrigin: "top center",
         ease: "power2.inOut"
-      })
+      });
       // 3. Reveal Co-Leader Profile
-      .from(".coleader-node", {
+      gsap.from(".coleader-node", {
+        scrollTrigger: commonScrollTrigger(".coleader-node"),
         y: 50,
         opacity: 0,
         duration: 0.6,
         ease: "back.out(1.2)"
-      })
+      });
       // 4. Reveal Line to Management
-      .from(".line-to-management", {
+      gsap.from(".line-to-management", {
+        scrollTrigger: commonScrollTrigger(".line-to-management"),
         scaleY: 0,
         opacity: 0,
         duration: 0.5,
         transformOrigin: "top center",
         ease: "power2.inOut"
-      })
+      });
       // 5. Reveal Management Profile
-      .from(".management-node", {
+      gsap.from(".management-node", {
+        scrollTrigger: commonScrollTrigger(".management-node"),
         y: 50,
         opacity: 0,
         duration: 0.6,
         ease: "back.out(1.2)"
-      })
+      });
       // 6. Reveal Line down to Horizontal Connector
-      .from(".line-to-horizontal", {
+      gsap.from(".line-to-horizontal", {
+        scrollTrigger: commonScrollTrigger(".line-to-horizontal"),
         scaleY: 0,
         opacity: 0,
         duration: 0.5,
         transformOrigin: "top center",
         ease: "power2.inOut"
-      })
-      // 7. Reveal Horizontal Connector
-      .from(".connector-line-h", {
-        scaleX: 0,
-        opacity: 0,
-        duration: 0.8,
-        transformOrigin: "center center",
-        ease: "power2.inOut"
-      })
-      // 8. Stagger reveal sub-teams (lines, headers, then members)
-      .from(".subteam-line", {
-        scaleY: 0,
-        opacity: 0,
-        duration: 0.4,
-        transformOrigin: "top center",
-        stagger: 0.1,
-        ease: "power2.inOut"
-      }, "-=0.2")
-      .from(".team-header", {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.4,
-        stagger: 0.1,
-        ease: "back.out(1.2)"
-      }, "-=0.2")
-      .from(".subteam-member-line", {
-        scaleY: 0,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.1,
-        transformOrigin: "top center",
-        ease: "power2.inOut"
-      }, "-=0.2")
-      .from(".subteam-member", {
-        y: 40,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.1,
-        ease: "back.out(1.2)"
-      }, "-=0.2");
+      });
+      // 7. Reveal Horizontal Connectors
+      gsap.utils.toArray(".connector-line-h").forEach((el: any) => {
+        gsap.from(el, {
+          scrollTrigger: commonScrollTrigger(el),
+          scaleX: 0,
+          opacity: 0,
+          duration: 0.8,
+          transformOrigin: "center center",
+          ease: "power2.inOut"
+        });
+      });
+      // 8. Stagger reveal sub-teams
+      gsap.utils.toArray(".subteam-line").forEach((el: any) => {
+        gsap.from(el, {
+          scrollTrigger: commonScrollTrigger(el),
+          scaleY: 0,
+          opacity: 0,
+          duration: 0.4,
+          transformOrigin: "top center",
+          ease: "power2.inOut"
+        });
+      });
+      gsap.utils.toArray(".team-header").forEach((el: any) => {
+        gsap.from(el, {
+          scrollTrigger: commonScrollTrigger(el),
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.4,
+          ease: "back.out(1.2)"
+        });
+      });
+      gsap.utils.toArray(".subteam-member-line").forEach((el: any) => {
+        gsap.from(el, {
+          scrollTrigger: commonScrollTrigger(el),
+          scaleY: 0,
+          opacity: 0,
+          duration: 0.5,
+          transformOrigin: "top center",
+          ease: "power2.inOut"
+        });
+      });
+      gsap.utils.toArray(".subteam-member").forEach((el: any) => {
+        gsap.from(el, {
+          scrollTrigger: commonScrollTrigger(el),
+          y: 40,
+          opacity: 0,
+          duration: 0.5,
+          ease: "back.out(1.2)"
+        });
+      });
 
 
       // Parallax Effects
@@ -199,8 +235,8 @@ function App() {
   }, []);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-white text-black font-sans selection:bg-primary/20 pb-24 relative overflow-hidden">
-      <SplashCursor 
+    <div ref={containerRef} className="min-h-screen bg-white text-black font-sans selection:bg-primary/20 relative overflow-hidden">
+      <SplashCursor
         DENSITY_DISSIPATION={4.5}
         VELOCITY_DISSIPATION={4}
         PRESSURE={0.3}
@@ -210,7 +246,7 @@ function App() {
         COLOR="#d4af37"
         RAINBOW_MODE={false}
       />
-      
+
       <GoldenGlitters />
 
       {/* Background Decorative Parallax Elements */}
@@ -221,10 +257,10 @@ function App() {
 
       {/* Header Section */}
       <header className="relative min-h-screen pt-16 pb-24 overflow-hidden flex flex-col items-center justify-center text-center">
-        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
-             style={{ background: 'radial-gradient(circle at 50% 0%, #d4af37 0%, transparent 70%)' }}>
+        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
+          style={{ background: 'radial-gradient(circle at 50% 0%, #d4af37 0%, transparent 70%)' }}>
         </div>
-        
+
         <div className="z-10 flex flex-col items-center gap-6 px-4">
           <div ref={logoRef}>
             <GlareHover
@@ -237,9 +273,9 @@ function App() {
               glareColor="#d4af37"
             >
               <div className="flex flex-col items-center justify-center h-full w-full p-2">
-                <img 
-                  src={logo} 
-                  alt="RKMVCC E-CELL Logo" 
+                <img
+                  src={logo}
+                  alt="RKMVCC E-CELL Logo"
                   className="w-full h-full object-contain drop-shadow-[0_4px_15px_rgba(212,175,55,0.3)]"
                   loading="eager"
                   fetchPriority="high"
@@ -255,7 +291,7 @@ function App() {
               </div>
             </GlareHover>
           </div>
-          
+
           <div>
             <h1 className="header-text text-4xl md:text-6xl font-bold tracking-tight text-black mb-2">
               RKMVCC <span className="text-primary font-serif italic">E-CELL</span>
@@ -267,22 +303,22 @@ function App() {
               Ramakrishna Mission Vivekananda Centenary College Rahara, Kolkata - 118118
             </p>
           </div>
-          
+
           <div className="header-buttons flex gap-4 mt-8">
-            <SpecularButton 
-              size="md" 
-              baseColor="#ffffff" 
-              lineColor="#d4af37" 
+            <SpecularButton
+              size="md"
+              baseColor="#ffffff"
+              lineColor="#d4af37"
               textColor="#000000"
               className="font-semibold shadow-sm border border-gray-200"
               onClick={() => window.location.href = 'mailto:entre@rkmvccrahara.org'}
             >
               entre@rkmvccrahara.org
             </SpecularButton>
-            <SpecularButton 
-              size="md" 
-              baseColor="#ffffff" 
-              lineColor="#d4af37" 
+            <SpecularButton
+              size="md"
+              baseColor="#ffffff"
+              lineColor="#d4af37"
               textColor="#000000"
               className="font-semibold shadow-sm border border-gray-200"
               onClick={() => window.open('https://www.rkmvccrahara.org', '_blank')}
@@ -296,8 +332,8 @@ function App() {
       {/* Main Content: Organizational Chart */}
       <main className="max-w-7xl mx-auto px-4 relative z-10 flex flex-col items-center">
         <div className="mb-16 text-center">
-          <BlurText 
-            text="OUR TEAM" 
+          <BlurText
+            text="OUR TEAM"
             className="text-4xl md:text-5xl font-bold font-serif text-black tracking-widest"
             delay={100}
             animateBy="letters"
@@ -306,66 +342,65 @@ function App() {
         </div>
 
         {/* Tree Structure */}
-        <div className="relative w-full pb-12 px-4 tree-container">
+        <div className="relative w-full pb-2 px-4 tree-container">
           <div className="flex flex-col items-center w-full mx-auto">
-            
+
             {/* Leader */}
             <div className="flex flex-col items-center snap-center leader-node">
               {renderProfile(teamData.leader, 'large')}
               {/* Vertical Line */}
-              <div className="h-12 my-0 line-to-coleader shine-line relative overflow-hidden line-3d-v"></div>
+              <div className="h-16 -my-2 line-to-coleader shine-line relative overflow-hidden line-3d-v z-0"></div>
             </div>
 
             {/* Co-Leader */}
             <div className="flex flex-col items-center snap-center coleader-node">
               {renderProfile(teamData.coLeader, 'large')}
               {/* Vertical Line */}
-              <div className="h-12 my-0 line-to-management shine-line relative overflow-hidden line-3d-v"></div>
+              <div className="h-16 -my-2 line-to-management shine-line relative overflow-hidden line-3d-v z-0"></div>
             </div>
 
             {/* Management Head */}
             <div className="flex flex-col items-center snap-center management-node">
               {renderProfile(teamData.management, 'large')}
               {/* Vertical Line going down to horizontal connector */}
-              <div className="h-[72px] my-0 line-to-horizontal shine-line relative overflow-hidden line-3d-v z-10"></div>
+              <div className="h-[80px] -mt-2 mb-0 line-to-horizontal shine-line relative overflow-hidden line-3d-v z-0"></div>
             </div>
 
             {/* Sub-teams Horizontal Layout */}
             <div className="relative w-full">
               <div className="flex flex-wrap justify-center gap-8 relative mt-0 z-0">
                 {teamData.subTeams.map((team, idx) => (
-                  <div 
-                    key={idx} 
+                  <div
+                    key={idx}
                     className="flex flex-col items-center relative flex-1 min-w-[280px] snap-center pt-8"
                   >
-                  {/* Horizontal Segment connecting the nodes (bridges gap-8 between columns) */}
-                  <div className={`hidden xl:block absolute top-0 connector-line-h line-3d-h ${
-                    idx === 0 ? 'left-1/2 -right-4' :
-                    idx === SUB_TEAMS.length - 1 ? '-left-4 right-1/2' :
-                    '-left-4 -right-4'
-                  }`}></div>
+                    {/* Horizontal Segment connecting the nodes (bridges gap-8 between columns) */}
+                    <div className={`hidden xl:block absolute top-0 connector-line-h line-3d-h ${idx === 0 ? 'left-1/2 -right-4' :
+                        idx === SUB_TEAMS.length - 1 ? '-left-4 right-1/2' :
+                          '-left-4 -right-4'
+                      }`}></div>
 
-                  {/* Vertical line connecting horizontal bar to sub-team header */}
-                  <div className="h-8 absolute top-0 left-1/2 -translate-x-1/2 subteam-line shine-line overflow-hidden line-3d-v z-10"></div>
-                  
-                  {/* Team Header */}
-                  <div className="team-header glass-panel px-6 py-3 rounded-2xl mb-8 border-t border-primary/20 z-10 text-center w-[90%]">
-                    <h3 className="text-sm font-bold tracking-wider text-black uppercase">{team.name}</h3>
-                  </div>
+                    {/* Vertical line connecting horizontal bar to sub-team header */}
+                    <div className="h-8 absolute top-0 left-1/2 -translate-x-1/2 subteam-line shine-line overflow-hidden line-3d-v z-10"></div>
 
-                  {/* Team Members */}
-                  <div className="flex flex-col gap-6 w-full items-center relative">
-                    {/* Connecting line for members in a team */}
-                    <div className="absolute top-[-32px] bottom-0 left-1/2 -translate-x-1/2 z-0 shine-line overflow-hidden line-3d-v subteam-member-line"></div>
-                    
-                    {team.members.map((member, memberIdx) => (
-                      <div key={memberIdx} className="relative z-10 subteam-member">
-                        {renderProfile(member, 'small')}
-                      </div>
-                    ))}
+                    {/* Team Header */}
+                    <div className="team-header glass-panel px-6 py-3 rounded-2xl border-t border-primary/20 z-10 text-center w-[90%] min-h-[4rem] flex items-center justify-center">
+                      <h3 className="text-sm font-bold tracking-wider text-black uppercase">{team.name}</h3>
+                    </div>
+
+                    {/* Team Members */}
+                    <div className="flex flex-col w-full items-center relative">
+                      {team.members.map((member, memberIdx) => (
+                        <div key={memberIdx} className="flex flex-col items-center w-full">
+                          <div className={`relative w-[2px] subteam-member-line shine-line overflow-hidden line-3d-v z-0 ${memberIdx === 0 ? 'h-12' : 'h-10'} -my-2`}></div>
+                          <div className="relative z-10 subteam-member">
+                            {renderProfile(member, 'small')}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
               </div>
             </div>
           </div>
@@ -373,7 +408,7 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-16 pt-6 pb-6 border-t border-gray-200 text-center relative overflow-hidden">
+      <footer className="mt-8 pt-4 pb-4 border-t border-gray-200 text-center relative overflow-hidden">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-32 bg-primary/5 blur-3xl rounded-full"></div>
         <p className="text-gray-600 font-medium italic tracking-wide text-base z-10 relative font-serif">
           "Empowering Ideas. Building Future."

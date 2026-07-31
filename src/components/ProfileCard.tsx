@@ -406,7 +406,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
   return (
     <div
       ref={wrapRef}
-      className={`relative touch-none w-full ${className}`.trim()}
+      className={`relative w-full ${className}`.trim()}
       style={{ perspective: '500px', transform: 'translate3d(0, 0, 0.1px)', ...cardStyle } as React.CSSProperties}
     >
       {behindGlowEnabled && (
@@ -430,9 +430,9 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
               'rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px',
             transition: 'transform 1s ease',
             transform: 'translateZ(0) rotateX(0deg) rotateY(0deg)',
-            background: '#1a1a1a',
             backfaceVisibility: 'hidden',
-            border: '1px solid #d4af37'
+            border: '3px solid transparent',
+            background: 'linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(145deg, #FDE08B 0%, #d4af37 45%, #8B6508 55%, #FDE08B 100%) border-box'
           }}
           onMouseEnter={e => {
             e.currentTarget.style.transition = 'none';
@@ -459,8 +459,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             {/* Shine layer */}
             <div style={shineStyle} />
 
-            {/* Glare layer */}
-            <div style={glareStyle} />
+            {/* Glare layer removed to prevent sudden glare issue */}
 
             {/* Avatar content - Full Card Cover Photo */}
             <div
