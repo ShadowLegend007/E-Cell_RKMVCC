@@ -185,8 +185,8 @@ export const fetchTeamData = async (): Promise<TeamData> => {
               leader = member;
             } else if (role === 'Co-Leader') {
               coLeader = member;
-            } else if (role === 'Management Head') {
-              management = member;
+            } else if (role === 'Management Head' || name.toLowerCase() === 'rajdeep pal') {
+              management = { ...member, role: 'Management Head' };
             } else {
               const roleLower = role.toLowerCase();
               if (roleLower.includes('social media')) {

@@ -505,9 +505,9 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                     </div>
                   </div>
                   <div className="flex gap-1.5 flex-shrink-0" style={{ pointerEvents: 'auto', gridArea: 'auto' }}>
-                    {linkedin && (
+                    {linkedin && linkedin !== 'NA' && linkedin !== 'na' && (
                       <a
-                        href={linkedin}
+                        href={linkedin === '#' ? '#' : linkedin.startsWith('http') ? linkedin : `https://${linkedin}`}
                         target="_blank"
                         rel="noreferrer"
                         className="p-1 md:p-1.5 border border-primary/60 rounded-lg text-primary hover:bg-primary/20 transition-colors backdrop-blur-[10px]"
@@ -516,9 +516,9 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                         <FaLinkedin className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </a>
                     )}
-                    {instagram && (
+                    {instagram && instagram !== 'NA' && instagram !== 'na' && (
                       <a
-                        href={instagram}
+                        href={instagram === '#' ? '#' : instagram.startsWith('http') ? instagram : (instagram.includes('.com') ? `https://${instagram}` : `https://instagram.com/${instagram.replace(/^@/, '')}`)}
                         target="_blank"
                         rel="noreferrer"
                         className="p-1 md:p-1.5 border border-primary/60 rounded-lg text-primary hover:bg-primary/20 transition-colors backdrop-blur-[10px]"
